@@ -2,6 +2,9 @@ package com.by.kotlincoroutinedemo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
+import com.by.kotlincoroutinedemo.data.UserDatabase
+import com.by.kotlincoroutinedemo.entity.UserEntity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 
@@ -19,8 +22,31 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        aboutAsync()
+//        aboutAsync()
 //        aboutLaunch()
+        initListener()
+    }
+
+    private fun initListener(){
+        tvShow.setOnClickListener {
+            loadDataFromLocal()
+        }
+    }
+
+    private fun loadDataFromLocal(){
+        val userDao = UserDatabase.database.getUserDao()
+        userDao.putUser(UserEntity(1001,"ZhangSan"))
+        userDao.putUser(UserEntity(1002,"liming"))
+        lifecycleScope.launch {
+            val users = userDao.getAllUser()
+            println("user:${users.toString()}")
+            val user = userDao.getUser(1002)
+            println(" user by id is${user?.toString()}")
+            println("load data from local finish")
+        }
+
+        println("loadDataFromLocal")
+
     }
 
     /**
